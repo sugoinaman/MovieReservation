@@ -1,6 +1,6 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
-public enum Priveleges {
+public enum Role {
     ADMIN,
-    USEr
+    USER
 }

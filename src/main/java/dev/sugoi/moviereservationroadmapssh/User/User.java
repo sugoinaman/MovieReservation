@@ -1,24 +1,42 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import dev.sugoi.moviereservationroadmapssh.Movie.Movie;
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.Cascade;
+import org.springframework.lang.NonNull;
+
+import java.util.List;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "Person")
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
 @Getter
+@ToString
 public class User {
+
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long Id;
+    private Integer Id;
+
+    @NonNull
+    @Column(name = "user_name")
     private String userName;
+
+    @NonNull
+    @Column(name = "email")
     private String email;
+
+    @NonNull
+    @Column(name = "password")
     private String password;
-    private Priveleges priveleges;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private Role role;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Movie> listOfBookedMovies;
 }

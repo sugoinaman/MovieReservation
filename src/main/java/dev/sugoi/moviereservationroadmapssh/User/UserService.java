@@ -1,6 +1,10 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.security.Principal;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -12,12 +16,16 @@ public class UserService {
     }
 
      void addUser(User user) {
-        //ToDo: Do we need to check if he exists?
         userRepository.save(user);
+    }
+
+    Optional<User> getUser(Integer id, Authentication authentication) {
+        return userRepository.findByIdAndUserName(id, authentication.getName());
     }
 
     private void deleteUser(User user) {
         userRepository.delete(user);
     }
+
 
 }
