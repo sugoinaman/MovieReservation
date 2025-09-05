@@ -10,8 +10,7 @@ public class Movie {
     @Id
     private Integer Id;
     private String name;
-    private Integer availableSeats;
-    private Integer price;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
