@@ -1,9 +1,10 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
-import dev.sugoi.moviereservationroadmapssh.Movie.Movie;
+
+
+import dev.sugoi.moviereservationroadmapssh.Reservation.Reservation;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Cascade;
 import org.springframework.lang.NonNull;
 
 import java.util.List;
@@ -37,6 +38,7 @@ public class User {
     @Column(name = "role")
     private Role role;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Movie> listOfBookedMovies;
+    @OneToMany(mappedBy = "user")
+    private List<Reservation> reservations;
+
 }

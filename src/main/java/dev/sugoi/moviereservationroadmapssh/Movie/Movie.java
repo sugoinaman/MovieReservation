@@ -1,7 +1,10 @@
 package dev.sugoi.moviereservationroadmapssh.Movie;
 
+import dev.sugoi.moviereservationroadmapssh.Showtime.ShowTime;
 import dev.sugoi.moviereservationroadmapssh.User.User;
 import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 
@@ -12,8 +15,7 @@ public class Movie {
     private String name;
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @OneToMany(mappedBy = "movie")
+    private List<ShowTime> showTimes;
 
 }
