@@ -19,7 +19,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    Optional<User> getUser(Integer id, Authentication authentication) {
+    Optional<User> getUserById(Integer id, Authentication authentication) {
         return userRepository.findByIdAndUserName(id, authentication.getName());
     }
 

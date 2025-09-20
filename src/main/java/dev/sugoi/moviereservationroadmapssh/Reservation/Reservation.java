@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 public class Reservation {
 
     @Id
-    private Integer id;
+    private Integer id; //This could be a uuid ?
     // reservation created at this time
     private String createdAt;
 
