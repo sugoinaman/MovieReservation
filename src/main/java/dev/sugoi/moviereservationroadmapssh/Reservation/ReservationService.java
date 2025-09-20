@@ -16,6 +16,11 @@ public class ReservationService {
         this.reservationRepository = reservationRepository;
     }
 
+    // Get all reservations
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAll();
+    }
+
     // Save a new reservation
     public Reservation addReservation(Reservation reservation) {
         return reservationRepository.save(reservation);
@@ -26,14 +31,18 @@ public class ReservationService {
         return reservationRepository.findById(id);
     }
 
+    Reservation modifyReservation(Reservation newReservation, Integer id){
+        return reservationRepository.findById(id)
+                .map(reservation -> {
+                    reservation.set
+                })
+    }
+
     // Delete a reservation
     public void deleteReservation(Reservation reservation) {
         reservationRepository.delete(reservation);
     }
 
-    // Get all reservations
-    public List<Reservation> getAllReservations() {
-        return reservationRepository.findAll();
-    }
+
 
 }   //ToDo: Modify a reservation? maybe user/admin change timings and date
