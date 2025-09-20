@@ -1,5 +1,6 @@
 package dev.sugoi.moviereservationroadmapssh.Movie;
 
+import dev.sugoi.moviereservationroadmapssh.Reservation.Reservation;
 import dev.sugoi.moviereservationroadmapssh.Showtime.ShowTime;
 import dev.sugoi.moviereservationroadmapssh.User.User;
 import jakarta.persistence.*;
@@ -22,5 +23,7 @@ public class Movie {
     @OneToMany(mappedBy = "movie")
     private List<ShowTime> showTimes;
 
+    @OneToMany
+    private List<Reservation> reservations;
 
 }
