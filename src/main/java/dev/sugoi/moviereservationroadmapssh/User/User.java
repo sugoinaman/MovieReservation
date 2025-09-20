@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name = "Person")
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Setter
 @Getter
 @ToString
@@ -40,5 +41,6 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;
+
 
 }

@@ -1,7 +1,5 @@
-package dev.sugoi.moviereservationroadmapssh;
+package dev.sugoi.moviereservationroadmapssh.User;
 
-import dev.sugoi.moviereservationroadmapssh.User.User;
-import dev.sugoi.moviereservationroadmapssh.User.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
