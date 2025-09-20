@@ -19,6 +19,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/getAllUsers")
+    ResponseEntity<User> getAllUsers() {
+        return
+    }
+
+
     @GetMapping("/get/{id}")
     ResponseEntity<User> getUserById(@PathVariable Integer id, Authentication authentication) {
         Optional<User> optionalUser = userService.getUserById(id, authentication);

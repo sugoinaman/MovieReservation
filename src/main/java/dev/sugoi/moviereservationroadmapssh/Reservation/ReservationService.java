@@ -31,11 +31,17 @@ public class ReservationService {
         return reservationRepository.findById(id);
     }
 
-    Reservation modifyReservation(Reservation newReservation, Integer id){
+    Reservation modifyReservation(Reservation newReservation, Integer id) {
         return reservationRepository.findById(id)
                 .map(reservation -> {
-                    reservation.set
+                    reservation.setMovie(newReservation.getMovie());
+                    //ToDo before changing number of seats we need to check if they are available
+                    reservation.setNumberOfSeats(newReservation.getNumberOfSeats());
+                    return reservation;
                 })
+                .orElseGet(() -> {
+                    return reservationRepository.save(newReservation);
+                });
     }
 
     // Delete a reservation
@@ -43,6 +49,4 @@ public class ReservationService {
         reservationRepository.delete(reservation);
     }
 
-
-
-}   //ToDo: Modify a reservation? maybe user/admin change timings and date
+}
