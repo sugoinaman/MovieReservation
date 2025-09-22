@@ -3,7 +3,6 @@ package dev.sugoi.moviereservationroadmapssh.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +19,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    User addUser(User user) {
-        return userRepository.save(user);
+    void addUser(User user) {
+        userRepository.save(user);
     }
 
     Optional<User> getUserById(Integer id) {
@@ -51,6 +50,9 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    void deleteUser(Integer id) {
+        userRepository.deleteById(id);
+    }
 
 }
 
