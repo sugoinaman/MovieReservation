@@ -31,6 +31,14 @@ public class User {
         this.password = password;
     }
 
+    public User(Integer id, @NonNull String userName, @NonNull String email, @NonNull String password, List<Reservation> reservations) {
+        Id = id;
+        this.userName = userName;
+        this.email = email;
+        this.password = password;
+        this.reservations = reservations;
+    }
+
     @NonNull
     @Column(name = "user_name")
     private String userName;
