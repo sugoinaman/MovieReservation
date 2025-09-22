@@ -23,27 +23,21 @@ public class UserService {
         userRepository.save(user);
     }
 
-    Optional<User> getUserById(Integer id) {
-        return userRepository.findById(id);
+    Optional<User> getUserById(Integer id, Authentication authentication) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isEmpty())
     }
 
-    // Will be used later
-    Optional<User> getUserByIdAndAuthentication(Integer id, Authentication authentication) {
-        return userRepository.findByIdAndUserName(id, authentication.getName());
-    }
 
     //ToDo: Need to setup auth, only admins can change info for all users. and only owning user can change himself
-    User modifyUser(User newUser, Integer id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setUserName(newUser.getUserName());
-                    user.setEmail(newUser.getEmail());
-                    user.setPassword(newUser.getPassword());
-                    return user;
-                })
-                .orElseGet(() -> {
-                    return userRepository.save(newUser);
-                });
+    void modifyUser(User updatedUser, Integer id, Authentication authentication) {
+
+
+        Optional<User> optionalUser = userRepository.findByIdAndUserName(id, authentication.getName());
+        if (optionalUser.isPresent()) {
+            User newUser = new User(id, updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getPassword(), optionalUser.get().getReservations());
+            userRepository.save(newUser);
+        }
     }
 
     private void deleteUser(User user) {

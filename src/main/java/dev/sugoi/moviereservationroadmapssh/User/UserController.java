@@ -29,11 +29,15 @@ public class UserController {
 
 
     @GetMapping("/get/{id}")
-    ResponseEntity<User> getUserById(@PathVariable Integer id) {
+    ResponseEntity<User> getUserById(@PathVariable Integer id, Authentication authentication) {
+
+        String userName = authentication.getName();
         Optional<User> optionalUser = userService.getUserById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            return ResponseEntity.ok(user);
+            if (user.getUserName().equals(userName)) {
+                return ResponseEntity.ok(user);
+            }
         }
         return ResponseEntity.notFound().build();
     }
@@ -52,20 +56,30 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
-    ResponseEntity<Void> updateUser(@PathVariable Integer id, @RequestBody User user) {
+    ResponseEntity<Void> updateUser(@PathVariable Integer id, @RequestBody User user, Authentication authentication, UriComponentsBuilder ucb) {
 
         // If a user exists at given id -> update, else create
-        if (userService.getUserById(id).isPresent()) {
-             userService.modifyUser(user, id);
-             return ResponseEntity.noContent().build();
+        String authUserName = authentication.getName();
+
+        Optional<User> optionalUser = userService.getUserById(id,authentication);
+
+        // Case 1: user exists and is authorized
+        if (optionalUser.isPresent()) {
+            User user1 = optionalUser.get();
+            if (authUserName.equals(user1.getUserName())) {
+                userService.modifyUser(user, id);
+                return ResponseEntity.noContent().build();
+            }
         }
+        // Case 2: user does not exist, create a new user....
+
         userService.modifyUser(user, id);
         return ResponseEntity.created(URI.create(id.toString())).build(); // um?
     }
 
     @DeleteMapping("/delete/{id}")
     ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
-        if(userService.getUserById(id).isPresent()){
+        if (userService.getUserById(id).isPresent()) {
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();
         }
