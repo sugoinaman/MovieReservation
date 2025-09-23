@@ -1,6 +1,8 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
-import org.springframework.security.core.Authentication;
+import dev.sugoi.moviereservationroadmapssh.Security.Annotation.IsAdmin;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    @IsAdmin
     List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -23,33 +26,32 @@ public class UserService {
         userRepository.save(user);
     }
 
-    Optional<User> getUserById(Integer id, Authentication authentication) {
-        Optional<User> optionalUser = userRepository.findById(id);
-        if(optionalUser.isEmpty())
+    // I am under the assumption that userNames are unique
+
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
+    Optional<User> getUserById(Integer id) {
+        return userRepository.findById(id);
     }
 
 
-    //ToDo: Need to setup auth, only admins can change info for all users. and only owning user can change himself
-    void modifyUser(User updatedUser, Integer id, Authentication authentication) {
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')") // users can modify their own details + admins can change
+    void modifyUser(User updatedUser, Integer id) {
 
-
-        Optional<User> optionalUser = userRepository.findByIdAndUserName(id, authentication.getName());
+        Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User newUser = new User(id, updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getPassword(), optionalUser.get().getReservations());
             userRepository.save(newUser);
         }
     }
 
-    private void deleteUser(User user) {
-        userRepository.delete(user);
-    }
-
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     void deleteUser(Integer id) {
+        if(getUserById(id).isEmpty()){
+            throw EntityNotFoundException;
+        }
         userRepository.deleteById(id);
     }
-
 }
 
 
-//ToDo: To remember:  a user can only see his own reservation but an admin can see everything.
-// So we protect all endpoints for admins with security filter chain which is ez
+//ToDO we can pre filter the inputs that these methods take for more security
