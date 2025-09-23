@@ -1,4 +1,4 @@
-package dev.sugoi.moviereservationroadmapssh;
+package dev.sugoi.moviereservationroadmapssh.Security;
 
 
 import dev.sugoi.moviereservationroadmapssh.User.Role;
