@@ -19,6 +19,14 @@ class UserIntegrationTest {
     @Autowired
     TestRestTemplate testRestTemplate;
 
+    @Test
+    void adminCanAccessAllUsers(){
+
+
+
+
+    }
+
 
     @Test
     void shouldCreateANewUser() throws InterruptedException {
@@ -59,3 +67,45 @@ class UserIntegrationTest {
     }
 
 }
+
+/*
+Happy paths (200 OK / 201 Created cases)
+
+GET all users returns list of users.
+
+GET user by id returns a single user if it exists.
+
+POST creates a new user and returns 201 Created with a Location header.
+
+PUT updates an existing user and returns 200 OK.
+
+DELETE removes a user and returns 200 OK or 204 No Content.
+
+Error scenarios
+
+GET user by id when the user does not exist → returns 404 Not Found.
+
+POST with invalid request body (e.g., missing fields) → returns 400 Bad Request.
+
+PUT with non-existing user id → returns 404 Not Found.
+
+DELETE with non-existing user id → returns 404 Not Found.
+
+Security / authorization behavior (if you enabled Spring Security)
+
+A regular user cannot access an endpoint restricted to admins (expect 403 Forbidden).
+
+An unauthenticated request to a secured endpoint returns 401 Unauthorized.
+
+Validation checks
+
+Invalid inputs (e.g., invalid email, too short password) return 400 Bad Request.
+
+Optional: verify validation messages if you want detailed error responses.
+
+Response structure and headers
+
+Check that response contains correct headers (e.g., Location on POST).
+
+Verify response body matches expected JSON format (fields, values).
+ */
