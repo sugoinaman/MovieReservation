@@ -1,5 +1,6 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
+import dev.sugoi.moviereservationroadmapssh.Exceptions.UserNotFoundException;
 import dev.sugoi.moviereservationroadmapssh.Security.Annotation.IsAdmin;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,21 +35,24 @@ public class UserService {
     }
 
 
-    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')") // users can modify their own details + admins can change
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
+        // users can modify their own details + admins can change
     void modifyUser(User updatedUser, Integer id) {
-
         Optional<User> optionalUser = userRepository.findById(id);
+
         if (optionalUser.isPresent()) {
-            User newUser = new User(id, updatedUser.getUserName(), updatedUser.getEmail(), updatedUser.getPassword(), optionalUser.get().getReservations());
-            userRepository.save(newUser);
+            User tempUser = optionalUser.get();
+            tempUser.setEmail(updatedUser.getEmail());
+            tempUser.setPassword(updatedUser.getPassword());
+            tempUser.setUserName(updatedUser.getUserName());
+            userRepository.save(tempUser);
         }
     }
 
     @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     void deleteUser(Integer id) {
-        if(getUserById(id).isEmpty()){
-            throw EntityNotFoundException;
-        }
+        if (getUserById(id).isEmpty())
+            throw new UserNotFoundException("User with id " + id + " not found");
         userRepository.deleteById(id);
     }
 }

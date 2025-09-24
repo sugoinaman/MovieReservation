@@ -18,24 +18,11 @@ public class User {
     public User() {
     }
 
-    public User(@NonNull String userName, @NonNull String email, @NonNull String password) {
+    public User( @NonNull String userName, @NonNull String email, @NonNull String password, Role role, List<Reservation> reservations) {
         this.userName = userName;
         this.email = email;
         this.password = password;
-    }
-
-    public User(Integer id, @NonNull String userName, @NonNull String email, @NonNull String password) {
-        Id = id;
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
-    }
-
-    public User(Integer id, @NonNull String userName, @NonNull String email, @NonNull String password, List<Reservation> reservations) {
-        Id = id;
-        this.userName = userName;
-        this.email = email;
-        this.password = password;
+        this.role = role;
         this.reservations = reservations;
     }
 
