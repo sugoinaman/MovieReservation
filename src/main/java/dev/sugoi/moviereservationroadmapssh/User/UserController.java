@@ -41,7 +41,7 @@ public class UserController {
 
     @PostMapping("/signup")
     ResponseEntity<Void> addUser(@RequestBody User user, UriComponentsBuilder ucb) {
-        User userToBeSaved = new User(user.getUserName(), user.getEmail(), user.getPassword());
+        User userToBeSaved = new User(user.getUserName(), user.getEmail(), user.getPassword(),Role.USER,List.of());
 
         userService.addUser(userToBeSaved);
         URI location = ucb
@@ -63,5 +63,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
-
 }

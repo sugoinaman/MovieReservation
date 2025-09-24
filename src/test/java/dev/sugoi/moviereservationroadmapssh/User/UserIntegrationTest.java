@@ -9,11 +9,12 @@ import org.springframework.http.ResponseEntity;
 
 
 import java.net.URI;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserTest {
+class UserIntegrationTest {
 
     @Autowired
     TestRestTemplate testRestTemplate;
@@ -21,21 +22,20 @@ class UserTest {
 
     @Test
     void shouldCreateANewUser() throws InterruptedException {
-        User testUser = new User(null, "sugoi", "sugoi571@gmail.com", "secret", Role.ADMIN);
+        User testUser = new User( "sugoi", "sugoi571@gmail.com", "secret",Role.ADMIN, List.of());
         ResponseEntity<Void> responseEntity = testRestTemplate.postForEntity("/user/signup", testUser, Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         URI locationOfNewUser = responseEntity.getHeaders().getLocation();
-
+        assertThat(locationOfNewUser).isNotNull();
         //get the newly created user
-
         ResponseEntity<User> fetchedResponse = testRestTemplate.getForEntity(locationOfNewUser, User.class);
         assertThat(fetchedResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         User fetchedUser = fetchedResponse.getBody();
         assertThat(fetchedUser)
                 .isNotNull()
-                .extracting(User::getUserName, User::getEmail, User::getPassword, User::getRole)
-                .containsExactly("sugoi", "sugoi571@gmail.com", "secret", Role.ADMIN);
+                .extracting(User::getUserName, User::getEmail, User::getPassword, User::getRole,User::getReservations)
+                .containsExactly("sugoi", "sugoi571@gmail.com", "secret", Role.ADMIN, List.of());
     }
 
     @Test
@@ -44,17 +44,17 @@ class UserTest {
                 .withBasicAuth("john_doe","password123")
                 .getForEntity("/user/1", String.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         System.out.println(response.getBody());
     }
 
     @Test
     void userCanOnlySeeTheirData() {
-
+        
     }
 
     @Test
-    void adminCanAccessAllData() {
+    void adminsCanAccessAllData() {
 
     }
 
