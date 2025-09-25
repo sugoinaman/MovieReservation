@@ -1,11 +1,15 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
+import org.apache.coyote.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 
 
 import java.net.URI;
@@ -20,17 +24,60 @@ class UserIntegrationTest {
     TestRestTemplate testRestTemplate;
 
     @Test
-    void adminCanAccessAllUsers(){
+    void userCanAccessHimself() {
+        ResponseEntity<User> response = testRestTemplate
+                .withBasicAuth("john_doe", "password123")
+                .getForEntity("/user/1", User.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        User responseUser = response.getBody();
+        assertThat(responseUser.getUserName()).isNotNull().isEqualTo("john_doe");
+    }
+
+    @Test
+    @DirtiesContext
+    void userCanUpdateHimself() {
+        User newUser = new User("not_john_doe", "ooga@gmail.com", "ooga", Role.USER, List.of());
+        HttpEntity<User> request = new HttpEntity<>(newUser);
+
+        ResponseEntity<String> postResponse = testRestTemplate
+                .withBasicAuth("john_doe", "password123")
+                .exchange("/user/1", HttpMethod.PUT, request, String.class);
+            // the normal put method doesn't let us check the status code apparently
+        ResponseEntity<User> response = testRestTemplate
+                .withBasicAuth("not_john_doe","ooga")
+                .getForEntity("/user/1", User.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        User responseUser = response.getBody();
+        assertThat(responseUser.getUserName()).isNotNull().isEqualTo("not_john_doe");
+        assertThat(responseUser.getEmail()).isNotNull().isEqualTo("ooga@gmail.com");
+        assertThat(responseUser.getPassword()).isNotNull().isEqualTo("ooga");
+
+    }
+
+    @Test
+    @DirtiesContext
+    void shouldDeleteUser(){
 
 
+        ResponseEntity<Void> deleteResponse = testRestTemplate
+                .withBasicAuth("john_doe", "secret")
+                .exchange("user/1", HttpMethod.DELETE, null, Void.class);
+        assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+        ResponseEntity<User> response = testRestTemplate
+                .withBasicAuth("jane_admin", "secret")
+                .getForEntity("user/1", User.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
 
     }
 
-
     @Test
     void shouldCreateANewUser() throws InterruptedException {
-        User testUser = new User( "sugoi", "sugoi571@gmail.com", "secret",Role.ADMIN, List.of());
+        User testUser = new User("sugoi", "sugoi571@gmail.com", "secret", Role.ADMIN, List.of());
         ResponseEntity<Void> responseEntity = testRestTemplate.postForEntity("/user/signup", testUser, Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -42,14 +89,16 @@ class UserIntegrationTest {
         User fetchedUser = fetchedResponse.getBody();
         assertThat(fetchedUser)
                 .isNotNull()
-                .extracting(User::getUserName, User::getEmail, User::getPassword, User::getRole,User::getReservations)
+                .extracting(User::getUserName, User::getEmail, User::getPassword, User::getRole, User::getReservations)
                 .containsExactly("sugoi", "sugoi571@gmail.com", "secret", Role.ADMIN, List.of());
     }
+
+
 
     @Test
     void shouldNotReturnUsersDataWhenUsingBadCredentials() {
         ResponseEntity<String> response = testRestTemplate
-                .withBasicAuth("john_doe","password123")
+                .withBasicAuth("john_doe", "password123")
                 .getForEntity("/user/1", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -58,7 +107,12 @@ class UserIntegrationTest {
 
     @Test
     void userCanOnlySeeTheirData() {
-        
+        ResponseEntity<String> response = testRestTemplate
+                .withBasicAuth("john_doe", "password123")
+                .getForEntity("user/2", String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
     }
 
     @Test
@@ -66,46 +120,29 @@ class UserIntegrationTest {
 
     }
 
+    @Test
+    void adminCanGetAllUsers() {
+        ResponseEntity<String> response = testRestTemplate
+                .withBasicAuth("jane_admin", "secret")
+                .getForEntity("/user/getAllUsers", String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        //Todo:  Check if I get all users here
+    }
 }
 
 /*
-Happy paths (200 OK / 201 Created cases)
 
-GET all users returns list of users.
 
-GET user by id returns a single user if it exists.
+ToDo: Get All users
 
-POST creates a new user and returns 201 Created with a Location header.
+ToDo: A User                                     Admin:
+      get by id                                  Do what users do +
+      update himself by id                       get all users
+      delete himself by id
 
-PUT updates an existing user and returns 200 OK.
 
-DELETE removes a user and returns 200 OK or 204 No Content.
+      ToDo: Sign up a user.
 
-Error scenarios
-
-GET user by id when the user does not exist → returns 404 Not Found.
-
-POST with invalid request body (e.g., missing fields) → returns 400 Bad Request.
-
-PUT with non-existing user id → returns 404 Not Found.
-
-DELETE with non-existing user id → returns 404 Not Found.
-
-Security / authorization behavior (if you enabled Spring Security)
-
-A regular user cannot access an endpoint restricted to admins (expect 403 Forbidden).
-
-An unauthenticated request to a secured endpoint returns 401 Unauthorized.
-
-Validation checks
-
-Invalid inputs (e.g., invalid email, too short password) return 400 Bad Request.
-
-Optional: verify validation messages if you want detailed error responses.
-
-Response structure and headers
-
-Check that response contains correct headers (e.g., Location on POST).
-
-Verify response body matches expected JSON format (fields, values).
  */
