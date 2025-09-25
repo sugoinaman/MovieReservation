@@ -25,8 +25,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/user/**").hasRole("ADMIN")
                         .requestMatchers("/user/signup").permitAll()
-                        .requestMatchers("/user")
-
+                        .requestMatchers("/user").authenticated()
 
                 )
 
@@ -42,6 +41,7 @@ public class SecurityConfig {
 
     @Bean
     UserDetailsService testOnlyUsers(PasswordEncoder passwordEncoder) {
+
         User.UserBuilder users = User.builder();
         UserDetails johndoe = users
                 .username("john_doe")

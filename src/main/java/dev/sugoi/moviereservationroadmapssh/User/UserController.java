@@ -29,7 +29,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/{id}")
     ResponseEntity<User> getUserById(@PathVariable Integer id) {
 
         Optional<User> optionalUser = userService.getUserById(id);
