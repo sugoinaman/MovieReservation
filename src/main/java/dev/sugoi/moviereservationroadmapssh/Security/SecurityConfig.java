@@ -21,7 +21,6 @@ import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
-@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
@@ -34,13 +33,12 @@ public class SecurityConfig {
                 )
                 .httpBasic(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable());
+
         return http.build();
     }
 
     @Bean
-    PasswordEncoder passwordEncoder() {
-        return new NoOpPasswordEncoder();
+    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
     }
-
-
 }

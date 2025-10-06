@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    ResponseEntity<Void> addUser(@RequestBody User user, UriComponentsBuilder ucb) {
+    ResponseEntity<String> addUser(@RequestBody User user, UriComponentsBuilder ucb) {
         User userToBeSaved = new User(user.getUserName(), user.getEmail(), user.getPassword(),Role.USER,List.of());
 
         userService.addUser(userToBeSaved);
@@ -49,7 +49,6 @@ public class UserController {
                 .buildAndExpand(userToBeSaved.getId())
                 .toUri();
         return ResponseEntity.created(location).build();
-
     }
 
     @PutMapping("/update/{id}")
