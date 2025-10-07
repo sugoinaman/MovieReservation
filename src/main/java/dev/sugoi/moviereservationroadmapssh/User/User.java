@@ -13,7 +13,7 @@ public class User {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Integer Id;
+    public Integer id;
 
     public User() {
     }
@@ -45,8 +45,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;
 
-    public Integer getId() {
-        return Id;
+    public Integer getid() {
+        return id;
     }
 
     public String getUserName() {
