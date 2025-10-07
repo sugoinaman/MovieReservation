@@ -3,6 +3,7 @@ package dev.sugoi.moviereservationroadmapssh.User;
 import dev.sugoi.moviereservationroadmapssh.Exceptions.UserNotFoundException;
 import dev.sugoi.moviereservationroadmapssh.Security.Annotation.IsAdmin;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class UserService {
 
     // I am under the assumption that userNames are unique
 
-    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
+    @PostAuthorize("@securityUtils.canAccessUser(returnObject,authentication)")
     Optional<User> getUserById(Integer id) {
         return userRepository.findById(id);
     }

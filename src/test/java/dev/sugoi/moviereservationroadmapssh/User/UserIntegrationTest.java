@@ -72,17 +72,26 @@ class UserIntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     void shouldCreateANewUser() throws InterruptedException {
         User testUser = new User("poop", "poop@gmail.com", "idk", Role.ADMIN, List.of());
         ResponseEntity<Void> responseEntity = testRestTemplate.postForEntity("/user/signup", testUser, Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        URI locationOfNewUser = responseEntity.getHeaders().getLocation();
+        String locationOfNewUser = responseEntity.getHeaders().getLocation().getPath();
         assertThat(locationOfNewUser).isNotNull();
+        System.out.println("location of new user is " + locationOfNewUser);
         //get the newly created user
-        ResponseEntity<User> fetchedResponse = testRestTemplate.getForEntity(locationOfNewUser, User.class);
+        ResponseEntity<User> fetchedResponse =
+                testRestTemplate.withBasicAuth("poop", "idk")
+                .getForEntity(locationOfNewUser, User.class);
+
         assertThat(fetchedResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
         User fetchedUser = fetchedResponse.getBody();
+
+        System.out.println(fetchedUser.toString());
+
         assertThat(fetchedUser)
                 .isNotNull()
                 .extracting(User::getUserName, User::getEmail, User::getPassword, User::getRole, User::getReservations)
@@ -122,7 +131,7 @@ class UserIntegrationTest {
     @Test
     void adminCanGetAllUsers() {
         ResponseEntity<String> response = testRestTemplate
-                .withBasicAuth("jane_admin", "secret")
+                .withBasicAuth("sugoi", "secret")
                 .getForEntity("/user/getAllUsers", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
