@@ -43,9 +43,9 @@ class UserIntegrationTest {
         ResponseEntity<String> postResponse = testRestTemplate
                 .withBasicAuth("john_doe", "password123")
                 .exchange("/user/1", HttpMethod.PUT, request, String.class);
-            // the normal put method doesn't let us check the status code apparently
+        // the normal put method doesn't let us check the status code apparently
         ResponseEntity<User> response = testRestTemplate
-                .withBasicAuth("not_john_doe","ooga")
+                .withBasicAuth("not_john_doe", "ooga")
                 .getForEntity("/user/1", User.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -58,8 +58,7 @@ class UserIntegrationTest {
 
     @Test
     @DirtiesContext
-    void shouldDeleteUser(){
-
+    void shouldDeleteUser() {
 
         ResponseEntity<Void> deleteResponse = testRestTemplate
                 .withBasicAuth("john_doe", "secret")
@@ -69,15 +68,12 @@ class UserIntegrationTest {
         ResponseEntity<User> response = testRestTemplate
                 .withBasicAuth("jane_admin", "secret")
                 .getForEntity("user/1", User.class);
-
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-
-
     }
 
     @Test
     void shouldCreateANewUser() throws InterruptedException {
-        User testUser = new User("sugoi", "sugoi571@gmail.com", "secret", Role.ADMIN, List.of());
+        User testUser = new User("poop", "poop@gmail.com", "idk", Role.ADMIN, List.of());
         ResponseEntity<Void> responseEntity = testRestTemplate.postForEntity("/user/signup", testUser, Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -90,15 +86,14 @@ class UserIntegrationTest {
         assertThat(fetchedUser)
                 .isNotNull()
                 .extracting(User::getUserName, User::getEmail, User::getPassword, User::getRole, User::getReservations)
-                .containsExactly("sugoi", "sugoi571@gmail.com", "secret", Role.ADMIN, List.of());
+                .containsExactly("poop", "poop@gmail.com", "idk", Role.ADMIN, List.of());
     }
-
 
 
     @Test
     void shouldNotReturnUsersDataWhenUsingBadCredentials() {
         ResponseEntity<String> response = testRestTemplate
-                .withBasicAuth("john_doe", "password123")
+                .withBasicAuth("john_doe", "wrongPassword")
                 .getForEntity("/user/1", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -117,7 +112,11 @@ class UserIntegrationTest {
 
     @Test
     void adminsCanAccessAllData() {
+        ResponseEntity<String> response = testRestTemplate
+                .withBasicAuth("sugoi", "secret")
+                .getForEntity("/user/getAllUsers", String.class);
 
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
