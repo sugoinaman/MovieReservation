@@ -33,22 +33,19 @@ public class UserController {
     @GetMapping("/{id}")
     ResponseEntity<User> getUserById(@PathVariable Integer id) {
         log.info("get user by id: {} used", id);
-        Optional<User> optionalUser = userService.getUserById(id);
-        return optionalUser
-                .map(ResponseEntity::ok).
-                orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
-
+        User user = userService.getUserById(id);
+        return  ResponseEntity.ok(user);
     }
 
     @PostMapping("/signup")
-    ResponseEntity<String> addUser(@RequestBody User user, UriComponentsBuilder ucb) {
+    ResponseEntity<Void> addUser(@RequestBody User user, UriComponentsBuilder ucb) {
 
         log.info("new user trying to sign up with credentials:{} ", user.toString());
         User userToBeSaved = new User(user.getUserName(), user.getEmail(), user.getPassword(), Role.USER, List.of());
 
         userService.addUser(userToBeSaved);
         URI location = ucb
-                .path("user/get/{id}")
+                .path("user/{id}")
                 .buildAndExpand(userToBeSaved.getid())
                 .toUri();
         return ResponseEntity.created(location).build();

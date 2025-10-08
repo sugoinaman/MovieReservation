@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+// ToDo: tests run but when user is not authenticated it throw
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserIntegrationTest {
 
@@ -42,17 +43,19 @@ class UserIntegrationTest {
 
         ResponseEntity<String> postResponse = testRestTemplate
                 .withBasicAuth("john_doe", "password123")
-                .exchange("/user/1", HttpMethod.PUT, request, String.class);
+                .exchange("/user/update/1", HttpMethod.PUT, request, String.class);
         // the normal put method doesn't let us check the status code apparently
         ResponseEntity<User> response = testRestTemplate
                 .withBasicAuth("not_john_doe", "ooga")
                 .getForEntity("/user/1", User.class);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         User responseUser = response.getBody();
+        System.out.println(responseUser);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+
         assertThat(responseUser.getUserName()).isNotNull().isEqualTo("not_john_doe");
         assertThat(responseUser.getEmail()).isNotNull().isEqualTo("ooga@gmail.com");
-        assertThat(responseUser.getPassword()).isNotNull().isEqualTo("ooga");
 
     }
 
@@ -61,31 +64,33 @@ class UserIntegrationTest {
     void shouldDeleteUser() {
 
         ResponseEntity<Void> deleteResponse = testRestTemplate
-                .withBasicAuth("john_doe", "secret")
-                .exchange("user/1", HttpMethod.DELETE, null, Void.class);
+                .withBasicAuth("john_doe", "password123")
+                .exchange("/user/delete/1", HttpMethod.DELETE, null, Void.class);
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        System.out.println("The body is " + deleteResponse.getBody());
 
         ResponseEntity<User> response = testRestTemplate
-                .withBasicAuth("jane_admin", "secret")
-                .getForEntity("user/1", User.class);
+                .withBasicAuth("sugoi", "secret")
+                .getForEntity("/user/1", User.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     @DirtiesContext
     void shouldCreateANewUser() throws InterruptedException {
-        User testUser = new User("poop", "poop@gmail.com", "idk", Role.ADMIN, List.of());
+        User testUser = new User("poop", "poop@gmail.com", "idk", Role.USER, List.of());
         ResponseEntity<Void> responseEntity = testRestTemplate.postForEntity("/user/signup", testUser, Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        String locationOfNewUser = responseEntity.getHeaders().getLocation().getPath();
+        URI locationOfNewUser = responseEntity.getHeaders().getLocation();
         assertThat(locationOfNewUser).isNotNull();
-        System.out.println("location of new user is " + locationOfNewUser);
+        System.out.println("Location of created user was " + locationOfNewUser);
         //get the newly created user
         ResponseEntity<User> fetchedResponse =
                 testRestTemplate.withBasicAuth("poop", "idk")
-                .getForEntity(locationOfNewUser, User.class);
+                        .getForEntity(locationOfNewUser, User.class);
 
+        System.out.println("response user was " + fetchedResponse.getBody());
         assertThat(fetchedResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         User fetchedUser = fetchedResponse.getBody();
@@ -94,8 +99,8 @@ class UserIntegrationTest {
 
         assertThat(fetchedUser)
                 .isNotNull()
-                .extracting(User::getUserName, User::getEmail, User::getPassword, User::getRole, User::getReservations)
-                .containsExactly("poop", "poop@gmail.com", "idk", Role.ADMIN, List.of());
+                .extracting(User::getUserName, User::getEmail, User::getRole, User::getReservations)
+                .containsExactly("poop", "poop@gmail.com", Role.USER, List.of());
     }
 
 
@@ -106,14 +111,13 @@ class UserIntegrationTest {
                 .getForEntity("/user/1", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        System.out.println(response.getBody());
     }
 
     @Test
     void userCanOnlySeeTheirData() {
         ResponseEntity<String> response = testRestTemplate
                 .withBasicAuth("john_doe", "password123")
-                .getForEntity("user/2", String.class);
+                .getForEntity("/user/2", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 

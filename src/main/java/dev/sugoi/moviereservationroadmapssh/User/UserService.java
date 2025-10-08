@@ -32,23 +32,19 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // I am under the assumption that userNames are unique
-
-    @PostAuthorize("@securityUtils.canAccessUser(returnObject,authentication)")
-    Optional<User> getUserById(Integer id) {
-        return userRepository.findById(id);
+    @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
+    User getUserById(Integer id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User with id: " + id + " not found."));
     }
 
-
     @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
-        // users can modify their own details + admins can change
     void modifyUser(User updatedUser, Integer id) {
         Optional<User> optionalUser = userRepository.findById(id);
 
         if (optionalUser.isPresent()) {
             User tempUser = optionalUser.get();
             tempUser.setEmail(updatedUser.getEmail());
-            tempUser.setPassword(updatedUser.getPassword());
+            tempUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
             tempUser.setUserName(updatedUser.getUserName());
             userRepository.save(tempUser);
         }
@@ -56,8 +52,6 @@ public class UserService {
 
     @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     void deleteUser(Integer id) {
-        if (getUserById(id).isEmpty())
-            throw new UserNotFoundException("User with id " + id + " not found");
         userRepository.deleteById(id);
     }
 }

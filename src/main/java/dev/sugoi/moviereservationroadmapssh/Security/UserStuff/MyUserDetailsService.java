@@ -1,6 +1,7 @@
-package dev.sugoi.moviereservationroadmapssh.Security;
+package dev.sugoi.moviereservationroadmapssh.Security.UserStuff;
 
 
+import dev.sugoi.moviereservationroadmapssh.Exceptions.UserNotFoundException;
 import dev.sugoi.moviereservationroadmapssh.User.User;
 import dev.sugoi.moviereservationroadmapssh.User.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,14 +20,7 @@ public class MyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserName(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(username + " not found!");
-        }
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getUserName())
-                .password(user.getPassword())
-                .roles(user.getRole().name())
-                .build();
+        User user = userRepository.findByUserName(username).orElseThrow(() -> new UserNotFoundException(username + " not found!"));
+        return new MyUserDetails(user);
     }
 }
