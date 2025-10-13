@@ -3,6 +3,7 @@ package dev.sugoi.moviereservationroadmapssh.Movie;
 import dev.sugoi.moviereservationroadmapssh.Reservation.Reservation;
 import dev.sugoi.moviereservationroadmapssh.Showtime.ShowTime;
 import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

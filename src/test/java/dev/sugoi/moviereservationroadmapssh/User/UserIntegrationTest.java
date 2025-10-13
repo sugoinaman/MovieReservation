@@ -61,7 +61,7 @@ class UserIntegrationTest {
 
     @Test
     @DirtiesContext
-    void shouldDeleteUser() {
+    void userCanDeleteHimself() {
 
         ResponseEntity<Void> deleteResponse = testRestTemplate
                 .withBasicAuth("john_doe", "password123")
@@ -124,15 +124,6 @@ class UserIntegrationTest {
     }
 
     @Test
-    void adminsCanAccessAllData() {
-        ResponseEntity<String> response = testRestTemplate
-                .withBasicAuth("sugoi", "secret")
-                .getForEntity("/user/getAllUsers", String.class);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     void adminCanGetAllUsers() {
         ResponseEntity<String> response = testRestTemplate
                 .withBasicAuth("sugoi", "secret")
@@ -143,18 +134,3 @@ class UserIntegrationTest {
         //Todo:  Check if I get all users here
     }
 }
-
-/*
-
-
-ToDo: Get All users
-
-ToDo: A User                                     Admin:
-      get by id                                  Do what users do +
-      update himself by id                       get all users
-      delete himself by id
-
-
-      ToDo: Sign up a user.
-
- */
