@@ -15,7 +15,7 @@ public class Movie {
     private String title;
     private String description;
     private String genre;
-
+    private  image;
     //ToDo: need a poster image ?
 
     @OneToMany(mappedBy = "movie")
@@ -28,12 +28,13 @@ public class Movie {
 
     }
 
-    public Movie(String title, String description, String genre, List<ShowTime> showTimes, List<Reservation> reservations) {
+    public Movie(String title, String description, String genre, List<ShowTime> showTimes, List<Reservation> reservations, MultipartFile image) {
         this.title = title;
         this.description = description;
         this.genre = genre;
         this.showTimes = showTimes;
         this.reservations = reservations;
+        this.fil
     }
 
 
