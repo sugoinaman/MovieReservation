@@ -1,16 +1,22 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
-import org.apache.coyote.Response;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
-
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
 import java.util.List;
@@ -19,10 +25,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 // ToDo: tests run but when user is not authenticated it throw
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Testcontainers
+
 class UserIntegrationTest {
 
     @Autowired
     TestRestTemplate testRestTemplate;
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.0");
+
+    @BeforeAll
+    static void setUp() {
+        postgres.start();
+    }
+    @AfterAll
+    static void cleanUp() {
+        postgres.stop();
+    }
+
+    @BeforeEach
 
     @Test
     void userCanAccessHimself() {
