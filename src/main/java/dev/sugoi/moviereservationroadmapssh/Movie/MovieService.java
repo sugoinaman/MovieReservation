@@ -1,9 +1,10 @@
 package dev.sugoi.moviereservationroadmapssh.Movie;
 
+import dev.sugoi.moviereservationroadmapssh.Exceptions.MovieNotFoundException;
+import dev.sugoi.moviereservationroadmapssh.Security.Annotation.IsAdmin;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MovieService {
@@ -14,23 +15,21 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    // get all movies
+
     List<Movie> getAllMovies() {
         return movieRepository.findAll();
     }
 
-    // add a movie
+    Movie getMovieById(Integer id) {
+        return movieRepository.findById(id).orElseThrow(() -> new MovieNotFoundException("Movie with id: " + " not found" + id));
+    }
+
+    @IsAdmin
     Movie addMovie(Movie movie) {
         return movieRepository.save(movie);
     }
 
-    // get movie by ID
-    Optional<Movie> getMovieById(Integer id) {
-        return movieRepository.findById(id);
-    }
-
-    // Modify a movie details?
-
+    @IsAdmin
     Movie modifyMovie(Movie newMovie, Integer id) {
 
         return movieRepository.findById(id)
@@ -45,8 +44,8 @@ public class MovieService {
                 });
     }
 
-    // Delete movie by ID
-    private void deleteMovie(Integer id) {
+    @IsAdmin
+     void deleteMovie(Integer id) {
         movieRepository.deleteById(id);
     }
 
