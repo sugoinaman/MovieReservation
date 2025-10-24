@@ -3,7 +3,8 @@ package dev.sugoi.moviereservationroadmapssh.Movie;
 import dev.sugoi.moviereservationroadmapssh.Reservation.Reservation;
 import dev.sugoi.moviereservationroadmapssh.Showtime.ShowTime;
 import jakarta.persistence.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.lang.NonNull;
+
 
 import java.util.List;
 
@@ -12,10 +13,18 @@ public class Movie {
 
     @Id
     private Integer Id;
+
+    @NonNull
+    @Column(name = "movie_title")
     private String title;
+
+    @NonNull
+    @Column(name = "movie_description")
     private String description;
-    private String genre;
-    private  image;
+
+    @Enumerated(EnumType.STRING)
+    private Genre genre;
+
     //ToDo: need a poster image ?
 
     @OneToMany(mappedBy = "movie")
@@ -28,17 +37,16 @@ public class Movie {
 
     }
 
-    public Movie(String title, String description, String genre, List<ShowTime> showTimes, List<Reservation> reservations, MultipartFile image) {
+    public Movie(String title, String description, Genre genre, List<ShowTime> showTimes, List<Reservation> reservations) {
         this.title = title;
         this.description = description;
         this.genre = genre;
         this.showTimes = showTimes;
         this.reservations = reservations;
-        this.fil
     }
 
 
-    public Integer getId() {
+    public Integer getid() {
         return Id;
     }
 
@@ -62,11 +70,11 @@ public class Movie {
         this.description = description;
     }
 
-    public String getGenre() {
+    public Genre getGenre() {
         return genre;
     }
 
-    public void setGenre(String genre) {
+    public void setGenre(Genre genre) {
         this.genre = genre;
     }
 

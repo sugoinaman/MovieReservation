@@ -39,7 +39,20 @@ public class UserService {
 
     @PreAuthorize("#id == authentication.principal.id or hasRole('ADMIN')")
     void modifyUser(User updatedUser, Integer id) {
+
         Optional<User> optionalUser = userRepository.findById(id);
+
+//
+//         userRepository.findById(id)
+//
+//                .map(fetchedUser -> {
+//                            fetchedUser.setEmail(updatedUser.getEmail());
+//                            fetchedUser.setPassword(updatedUser.getPassword());
+//                            fetchedUser.setUserName(updatedUser.getUserName());
+//                             userRepository.save(fetchedUser);
+//                        })
+//                .orElseGet(()-> userRepository.save(updatedUser));
+
 
         if (optionalUser.isPresent()) {
             User tempUser = optionalUser.get();

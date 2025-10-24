@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -22,12 +22,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/getAllUsers")
+    @GetMapping("")
     ResponseEntity<List<User>> getAllUsers() {
         log.info("get all user endpoint accessed");
         List<User> listOfUsers = userService.getAllUsers();
         return ResponseEntity.ok(listOfUsers);
     }
+    // ToDo: Need to add pagination for this end point
 
 
     @GetMapping("/{id}")
@@ -37,7 +38,7 @@ public class UserController {
         return  ResponseEntity.ok(user);
     }
 
-    @PostMapping("/signup")
+    @PostMapping()
     ResponseEntity<Void> addUser(@RequestBody User user, UriComponentsBuilder ucb) {
 
         log.info("new user trying to sign up with credentials:{} ", user.toString());
@@ -51,14 +52,14 @@ public class UserController {
         return ResponseEntity.created(location).build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<Void> updateUser(@PathVariable Integer id, @RequestBody User newUser) {
         log.info("trying to modify user with id {}, new user: {} ", id, newUser.toString());
         userService.modifyUser(newUser, id);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         log.info("deleting user with id: {}", id);
         userService.deleteUser(id);
