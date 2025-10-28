@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 public class Movie {
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Integer Id;
 
@@ -92,5 +93,17 @@ public class Movie {
 
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "Id=" + Id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", genre=" + genre +
+                ", showTimes=" + showTimes +
+                ", reservations=" + reservations +
+                '}';
     }
 }
