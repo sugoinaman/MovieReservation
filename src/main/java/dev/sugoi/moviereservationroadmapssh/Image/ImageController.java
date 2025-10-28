@@ -9,7 +9,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 
-@RestController
+@RestController()
+@RequestMapping("/images")
 public class ImageController {
 
     private final ImageRepository imageRepository;

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -45,13 +44,11 @@ class UserIntegrationTest {
         postgres.stop();
     }
 
-    @BeforeEach
-
     @Test
     void userCanAccessHimself() {
         ResponseEntity<User> response = testRestTemplate
                 .withBasicAuth("john_doe", "password123")
-                .getForEntity("/user/1", User.class);
+                .getForEntity("/users/1", User.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         User responseUser = response.getBody();
@@ -66,11 +63,11 @@ class UserIntegrationTest {
 
         ResponseEntity<String> postResponse = testRestTemplate
                 .withBasicAuth("john_doe", "password123")
-                .exchange("/user/update/1", HttpMethod.PUT, request, String.class);
+                .exchange("/users/1", HttpMethod.PUT, request, String.class);
         // the normal put method doesn't let us check the status code apparently
         ResponseEntity<User> response = testRestTemplate
                 .withBasicAuth("not_john_doe", "ooga")
-                .getForEntity("/user/1", User.class);
+                .getForEntity("/users/1", User.class);
 
         User responseUser = response.getBody();
         System.out.println(responseUser);
@@ -88,13 +85,13 @@ class UserIntegrationTest {
 
         ResponseEntity<Void> deleteResponse = testRestTemplate
                 .withBasicAuth("john_doe", "password123")
-                .exchange("/user/delete/1", HttpMethod.DELETE, null, Void.class);
+                .exchange("/users/1", HttpMethod.DELETE, null, Void.class);
         assertThat(deleteResponse.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         System.out.println("The body is " + deleteResponse.getBody());
 
         ResponseEntity<User> response = testRestTemplate
                 .withBasicAuth("sugoi", "secret")
-                .getForEntity("/user/1", User.class);
+                .getForEntity("/users/1", User.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -102,7 +99,7 @@ class UserIntegrationTest {
     @DirtiesContext
     void shouldCreateANewUser() throws InterruptedException {
         User testUser = new User("poop", "poop@gmail.com", "idk", Role.USER, List.of());
-        ResponseEntity<Void> responseEntity = testRestTemplate.postForEntity("/user/signup", testUser, Void.class);
+        ResponseEntity<Void> responseEntity = testRestTemplate.postForEntity("/users", testUser, Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         URI locationOfNewUser = responseEntity.getHeaders().getLocation();
@@ -131,7 +128,7 @@ class UserIntegrationTest {
     void shouldNotReturnUsersDataWhenUsingBadCredentials() {
         ResponseEntity<String> response = testRestTemplate
                 .withBasicAuth("john_doe", "wrongPassword")
-                .getForEntity("/user/1", String.class);
+                .getForEntity("/users/1", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -140,7 +137,7 @@ class UserIntegrationTest {
     void userCanOnlySeeTheirData() {
         ResponseEntity<String> response = testRestTemplate
                 .withBasicAuth("john_doe", "password123")
-                .getForEntity("/user/2", String.class);
+                .getForEntity("/users/3", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
@@ -150,10 +147,29 @@ class UserIntegrationTest {
     void adminCanGetAllUsers() {
         ResponseEntity<String> response = testRestTemplate
                 .withBasicAuth("sugoi", "secret")
-                .getForEntity("/user/getAllUsers", String.class);
+                .getForEntity("/users", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         //Todo:  Check if I get all users here
+    }
+
+    @Test
+    void userCannotAccessOtherUsers(){
+
+        ResponseEntity<User> response = testRestTemplate
+                .withBasicAuth("john_doe","password123")
+                .getForEntity("/users/3",User.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    void userCannotAccessAdminEndpoint(){
+        ResponseEntity<String> response = testRestTemplate
+                .withBasicAuth("john_doe","password123")
+                .getForEntity("/users",String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
     }
 }

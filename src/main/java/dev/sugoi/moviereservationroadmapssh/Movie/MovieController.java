@@ -9,7 +9,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-@RestController("/movies")
+@RestController
+@RequestMapping("/movies")
 public class MovieController {
 
     private final MovieService movieService;
@@ -35,17 +36,19 @@ public class MovieController {
         return ResponseEntity.ok(movie);
     }
 
-    @PostMapping("")
+    @PostMapping()
     ResponseEntity<Void> addMovie(@RequestBody Movie movie, UriComponentsBuilder ucb) {
 
-        log.info("New movie added :{} ", movie.toString());
+
         Movie movieToBeAdded = new Movie(movie.getTitle(), movie.getDescription(), movie.getGenre(), movie.getShowTimes(), List.of());
 
         movieService.addMovie(movieToBeAdded);
         URI location = ucb
-                .path("movie/{id}")
+                .path("movies/{id}")
                 .buildAndExpand(movieToBeAdded.getid())
                 .toUri();
+
+        log.info("New movie added :{} ", movie.toString());
         return ResponseEntity.created(location).build();
     }
 

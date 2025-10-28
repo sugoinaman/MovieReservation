@@ -22,7 +22,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("")
+    @GetMapping()
     ResponseEntity<List<User>> getAllUsers() {
         log.info("get all user endpoint accessed");
         List<User> listOfUsers = userService.getAllUsers();
@@ -46,7 +46,7 @@ public class UserController {
 
         userService.addUser(userToBeSaved);
         URI location = ucb
-                .path("user/{id}")
+                .path("users/{id}")
                 .buildAndExpand(userToBeSaved.getid())
                 .toUri();
         return ResponseEntity.created(location).build();
