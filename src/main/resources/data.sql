@@ -9,7 +9,7 @@ VALUES ( 'john_doe', 'john@example.com', '$2a$10$pY6sFIFfYBVPsS.bJgnENu4w2kjZgWQ
 -- alex = alexPass
 -- emily = emily123
 
-INSERT INTO MOVIE (movie_title, movie_description, genre)
+INSERT INTO MOVIE (movie_title, movie_description, genre )
 VALUES
     ('Fighter’s Edge', 'A disgraced boxer gets one last shot at the championship title after training in a remote mountain monastery.', 'ACTION'),
     ('The Lost City of Raan', 'An adventurer and her rival race against time to uncover an ancient map leading to a mythical, sunken civilization.', 'ADVENTURE'),
@@ -21,3 +21,16 @@ VALUES
     ('The Iron Horse Promise', 'A sweeping period piece centered on the difficult and dangerous construction of the first transcontinental railway.', 'HISTORICAL'),
     ('The Shivering Truth', 'A group of college students breaks into an abandoned psychiatric hospital to prove a legend, only to find the horror is real.', 'HORROR'),
     ('Rhythm of the Rain', 'A vibrant tale of two dancers from rival schools who find common ground and love while preparing for a major competition.', 'MUSICAL');
+
+INSERT INTO SHOW_TIME (start_time, stop_time, price, movie_id)
+VALUES
+    (1300, 1500, 200, 1),
+    (1800, 2000, 250, 1),
+    (1400, 1600, 220, 2),
+    (1900, 2100, 300, 2),
+    (1200, 1400, 180, 3),
+    (1600, 1800, 230, 3),
+    (1000, 1200, 150, 4),
+    (1500, 1700, 200, 5),
+    (1900, 2100, 280, 6),
+    (2200, 0000, 250, 7);

@@ -50,6 +50,7 @@ public class MovieIntegrationTest {
                 .getForEntity("/movies", String.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        IO.println(response.getBody());
         //ToDo: Probably a good idea to check if we got the actual data as well
     }
 
