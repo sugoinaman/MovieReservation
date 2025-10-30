@@ -10,5 +10,6 @@ services:
       POSTGRES_USER: sugoi
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: db
+#      TZ: Asia/Kolkata
     ports:
       - "5432:5432"
