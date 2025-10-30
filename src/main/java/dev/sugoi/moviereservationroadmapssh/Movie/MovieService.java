@@ -25,15 +25,16 @@ public class MovieService {
     }
 
     @IsAdmin
-    Movie addMovie(Movie movie) {
-        return movieRepository.save(movie);
+    void addMovie(Movie movie) {
+        movieRepository.save(movie);
     }
 
     @IsAdmin
-    Movie modifyMovie(Movie newMovie, Integer id) {
+    void modifyMovie(Movie newMovie, Integer id) {
 
-        return movieRepository.findById(id)
+        movieRepository.findById(id)
                 .map(movie -> {
+                    movie.setTitle(newMovie.getTitle());
                     movie.setDescription(newMovie.getDescription());
                     movie.setGenre(newMovie.getGenre());
                     movie.setShowTimes(newMovie.getShowTimes());

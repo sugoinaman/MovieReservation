@@ -1,0 +1,5 @@
+test cases all run, now moving to test containers instead.
+
+test containers done, moving to image upload
+
+added movie controller and tests
