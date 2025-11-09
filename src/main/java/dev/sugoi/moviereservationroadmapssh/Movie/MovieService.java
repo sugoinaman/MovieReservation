@@ -1,7 +1,7 @@
 package dev.sugoi.moviereservationroadmapssh.Movie;
 
 import dev.sugoi.moviereservationroadmapssh.Exceptions.MovieNotFoundException;
-import dev.sugoi.moviereservationroadmapssh.Security.Annotation.IsAdmin;
+import dev.sugoi.moviereservationroadmapssh.Security.SecurityAnnotations.IsAdmin;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

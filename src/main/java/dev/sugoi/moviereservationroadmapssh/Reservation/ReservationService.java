@@ -1,7 +1,15 @@
 package dev.sugoi.moviereservationroadmapssh.Reservation;
 
+import dev.sugoi.moviereservationroadmapssh.Exceptions.NotEnoughSeatException;
+import dev.sugoi.moviereservationroadmapssh.Exceptions.ShowTimeNotFoundException;
+import dev.sugoi.moviereservationroadmapssh.Exceptions.UserNotFoundException;
+import dev.sugoi.moviereservationroadmapssh.Showtime.ShowTime;
+import dev.sugoi.moviereservationroadmapssh.Showtime.ShowTimeRepository;
+import dev.sugoi.moviereservationroadmapssh.User.User;
+import dev.sugoi.moviereservationroadmapssh.User.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,11 +17,15 @@ import java.util.Optional;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final ShowTimeRepository showTimeRepository;
+    private final UserRepository userRepository;
 
     //ToDo: Only admins and people who made the reservation can interact with the reservations.
 
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, ShowTimeRepository showTimeRepository, UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
+        this.showTimeRepository = showTimeRepository;
+        this.userRepository = userRepository;
     }
 
     // Get all reservations
@@ -22,11 +34,19 @@ public class ReservationService {
     }
 
     // Save a new reservation
-    public Reservation addReservation(Reservation reservation) {
-        return reservationRepository.save(reservation);
+    public Reservation addReservation(Integer userId, Integer showTimeId, int numberOfSeatsToBook) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        ShowTime showTime = showTimeRepository.findById(showTimeId).orElseThrow(() -> new ShowTimeNotFoundException("Show time not found"));
+        int numberOfAvailableSeats = showTime.getAvailableSeatsInAShow();
+        if (numberOfAvailableSeats < numberOfSeatsToBook) {
+            throw new NotEnoughSeatException("Not enough available seats. Available seats: " + numberOfAvailableSeats);
+        }
+
+        showTime.setAvailableSeatsInAShow(numberOfAvailableSeats - numberOfSeatsToBook);
+
+        return new Reservation(Calendar.getInstance(), showTime.getMovie(), numberOfSeatsToBook, user);
     }
 
-    // Get reservation by ID
     public Optional<Reservation> getReservationById(Integer id) {
         return reservationRepository.findById(id);
     }
@@ -44,7 +64,6 @@ public class ReservationService {
                 });
     }
 
-    // Delete a reservation
     public void deleteReservation(Reservation reservation) {
         reservationRepository.delete(reservation);
     }

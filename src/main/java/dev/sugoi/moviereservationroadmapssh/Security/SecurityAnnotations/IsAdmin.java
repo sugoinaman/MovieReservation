@@ -1,4 +1,4 @@
-package dev.sugoi.moviereservationroadmapssh.Security.Annotation;
+package dev.sugoi.moviereservationroadmapssh.Security.SecurityAnnotations;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
