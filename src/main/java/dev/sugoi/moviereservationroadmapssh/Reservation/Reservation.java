@@ -4,12 +4,14 @@ import dev.sugoi.moviereservationroadmapssh.Movie.Movie;
 import dev.sugoi.moviereservationroadmapssh.User.User;
 import jakarta.persistence.*;
 
+import java.util.Calendar;
+
 @Entity
 public class Reservation {
 
     @Id
     private Integer id;
-    private String createdAt;  // reservation created at this time
+    private Calendar createdAt;  // reservation created at this time
 
     @ManyToOne
     @JoinColumn (name = "movie_id")
@@ -23,11 +25,15 @@ public class Reservation {
     // to book another movie make another reservation hence the many to one.
 
 
-    public Reservation(String createdAt, Movie movie, Integer numberOfSeats, User user) {
+    public Reservation(Calendar createdAt, Movie movie, Integer numberOfSeats, User user) {
         this.createdAt = createdAt;
         this.movie = movie;
         this.numberOfSeats = numberOfSeats;
         this.user = user;
+    }
+
+    public Reservation() {
+
     }
 
     public Integer getId() {
@@ -38,11 +44,11 @@ public class Reservation {
         this.id = id;
     }
 
-    public String getCreatedAt() {
+    public Calendar getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(Calendar createdAt) {
         this.createdAt = createdAt;
     }
 

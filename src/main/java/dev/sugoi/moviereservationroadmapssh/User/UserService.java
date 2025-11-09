@@ -1,9 +1,7 @@
 package dev.sugoi.moviereservationroadmapssh.User;
 
 import dev.sugoi.moviereservationroadmapssh.Exceptions.UserNotFoundException;
-import dev.sugoi.moviereservationroadmapssh.Security.Annotation.IsAdmin;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.security.access.prepost.PostAuthorize;
+import dev.sugoi.moviereservationroadmapssh.Security.SecurityAnnotations.IsAdmin;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -41,19 +39,6 @@ public class UserService {
     void modifyUser(User updatedUser, Integer id) {
 
         Optional<User> optionalUser = userRepository.findById(id);
-
-//
-//         userRepository.findById(id)
-//
-//                .map(fetchedUser -> {
-//                            fetchedUser.setEmail(updatedUser.getEmail());
-//                            fetchedUser.setPassword(updatedUser.getPassword());
-//                            fetchedUser.setUserName(updatedUser.getUserName());
-//                             userRepository.save(fetchedUser);
-//                        })
-//                .orElseGet(()-> userRepository.save(updatedUser));
-
-
         if (optionalUser.isPresent()) {
             User tempUser = optionalUser.get();
             tempUser.setEmail(updatedUser.getEmail());
